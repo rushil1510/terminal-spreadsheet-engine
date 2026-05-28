@@ -86,19 +86,18 @@ When a formula is assigned to a cell (`A1=B2+C3`):
    the formula was first installed.)
 2. **Install the new formula in bit-packed form** and re-register `A1` as a
    dependant of each new input. Dependants are kept in an inline array up
-   to size 4 and promoted to an AVL set above that threshold -- a 50%+ memory
-   win on the typical workbook where most cells have few dependants.
+   to size 4 and promoted to an AVL set above that thresholds, in most cases there aren't a high number of dependencies.
 3. **Detect cycles.** An iterative DFS from `A1` walks the *forward*
    dependants graph. Touched cells are pushed onto a memo stack so that, if a
    back-edge is found, we can roll their walk-state back to what it was
-   before the DFS started -- and we restore the previously installed formula.
-4. **Recompute downstream.** A Kahn-style traversal evaluates cells in
+   before the DFS started and we restore the previously installed formula.
+4. **Recompute downstream.** Evaluate cells in
    topological order: a dependant is only queued once *all* of its inputs
    have been resolved. This guarantees we never recompute a cell whose
    inputs are still pending.
 
-The original implementation duplicated this graph walk: once for the inline
-array form and once for the AVL set form. This refactor introduces a unified
+The original submission during the course duplicated this graph walk: once for the inline
+array form and once for the AVL set form. This refactored version introduces a unified
 `DepIter` in `workbook/workbook.h` so the engine writes the algorithm once
 and the iterator hides the underlying storage.
 
