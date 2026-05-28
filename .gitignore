@@ -1,0 +1,5 @@
+*.o
+sheet
+tester
+outputs/*
+!outputs/.gitkeep
